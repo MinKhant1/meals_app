@@ -50,6 +50,25 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void _toggleFavourite(String mealId) {
+    final existingIndex =
+        _favouriteMeals.indexWhere((meal) => meal.id == mealId);
+    if (existingIndex >= 0) {
+      setState(() {
+        _favouriteMeals.removeAt(existingIndex);
+      });
+    } else {
+      setState(() {
+        _favouriteMeals
+            .add(DUMMY_MEALS.firstWhere((meal) => meal.id == mealId));
+      });
+    }
+  }
+
+  bool _isMealFavourte(String id) {
+    return _favouriteMeals.any((meal) => meal.id == id);
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -70,10 +89,11 @@ class _MyAppState extends State<MyApp> {
                   fontWeight: FontWeight.bold))),
       // home: const CategoriesScreen(),
       routes: {
-        '/': (ctx) => TabScreen(),
+        '/': (ctx) => TabScreen(favouriteMeals: _favouriteMeals),
         CategoryMealsScreen.routeName: (ctx) =>
             CategoryMealsScreen(_availableMeals),
-        MealDetailScreen.routeName: (ctx) => MealDetailScreen(),
+        MealDetailScreen.routeName: (ctx) =>
+            MealDetailScreen(_toggleFavourite, _isMealFavourte),
         FiltersScreen.routeName: (ctx) => FiltersScreen(
               saveFilters: _setFilters,
               currentFilters: _filters,
